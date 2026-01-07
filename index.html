@@ -2,7 +2,10 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>Lucky Pick</title>
+<title>🍀 Lucky Pick</title>
+
+<!-- 모바일 화면 최적화 -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 body {
@@ -13,6 +16,7 @@ body {
 }
 
 .container {
+  width: 95%;
   max-width: 420px;
   margin: auto;
   background: white;
@@ -48,10 +52,10 @@ select {
 
 button {
   width: 100%;
-  padding: 14px;
+  padding: 16px;
   border-radius: 12px;
   border: none;
-  font-size: 15px;
+  font-size: 16px;
   cursor: pointer;
 }
 
@@ -62,7 +66,7 @@ button {
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-wrap: nowrap;
+  flex-wrap: wrap; /* 모바일 줄바꿈 대응 */
   margin: 20px 0;
 }
 
@@ -104,23 +108,63 @@ button {
   margin-bottom: 10px;
   font-size: 13px;
 }
+
+/* Footer */
+.footer {
+  margin-top: 48px;
+  padding: 28px 16px;
+  background: #eef1f6;
+  border-top: 1px solid #e0e0e0;
+}
+
+.footer-inner {
+  max-width: 480px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.footer-title {
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.footer-info {
+  font-size: 12px;
+  color: #777;
+  margin-bottom: 6px;
+}
+
+.footer-info a {
+  color: #4a90e2;
+  text-decoration: none;
+}
+
+.footer-info a:hover {
+  text-decoration: underline;
+}
+
+.footer-desc {
+  margin-top: 10px;
+  color: #999;
+  line-height: 1.4;
+}
 </style>
 </head>
 
 <body>
-
 <div class="container">
   <h1>🍀 Lucky Pick</h1>
   <div class="subtitle">AI 기반 로또 번호 추천</div>
 
-  <label>목표 등수</label>
+  <label>🎯 목표 등수</label>
   <select id="rank">
     <option>1등 🥇</option>
     <option selected>2등 🥈</option>
     <option>3등 🥉</option>
   </select>
 
-  <label>추천 전략</label>
+  <label>📊 추천 전략</label>
   <select id="mode">
     <option>안정형</option>
     <option selected>균형형</option>
@@ -140,10 +184,10 @@ button {
 </div>
 
 <script>
-function rand() {
-  return Math.floor(Math.random() * 45) + 1;
-}
+// 랜덤 번호 생성
+function rand() { return Math.floor(Math.random() * 45) + 1; }
 
+// 번호 색상
 function color(n) {
   if (n <= 10) return "#4a90e2";
   if (n <= 20) return "#50b27e";
@@ -152,11 +196,16 @@ function color(n) {
   return "#34495e";
 }
 
+// 기준 주차 (한국 시간 기준)
 function weekInfo() {
   const d = new Date();
-  return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${Math.ceil(d.getDate() / 7)}주차`;
+  const koreaOffset = 9 * 60;
+  const utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+  const koreaTime = new Date(utc + (koreaOffset * 60000));
+  return `${koreaTime.getFullYear()}년 ${koreaTime.getMonth() + 1}월 ${Math.ceil(koreaTime.getDate() / 7)}주차`;
 }
 
+// AI 분석
 function analyzeNumbers(nums, bonus, rankText, modeText) {
   const low = nums.filter(n => n <= 15).length;
   const mid = nums.filter(n => n > 15 && n <= 30).length;
@@ -190,6 +239,7 @@ function analyzeNumbers(nums, bonus, rankText, modeText) {
   `;
 }
 
+// 번호 생성 & 랜더링
 function generate() {
   let nums = [];
   while (nums.length < 6) {
@@ -237,17 +287,11 @@ function render(nums, bonus) {
     );
 }
 
+// 추천 기록 저장 (최대 5개)
 function saveHistory(nums, bonus) {
   const h = JSON.parse(localStorage.getItem("history") || "[]");
-
-  h.unshift({
-    week: weekInfo(),
-    nums,
-    bonus
-  });
-
-  if (h.length > 5) h.pop(); // ✅ 최대 5개 유지
-
+  h.unshift({ week: weekInfo(), nums, bonus });
+  if (h.length > 5) h.pop();
   localStorage.setItem("history", JSON.stringify(h));
   loadHistory();
 }
@@ -272,18 +316,12 @@ function clearHistory() {
 loadHistory();
 </script>
 
+<!-- Footer -->
 <footer class="footer">
   <div class="footer-inner">
     <div class="footer-title">🍀 Lucky Pick</div>
-
-    <div class="footer-info">
-      © 2026 Lucky Pick. All rights reserved.
-    </div>
-
-    <div class="footer-info">
-      문의 : <a href="mailto:luckypick.help@gmail.com">luckypick.help@gmail.com</a>
-    </div>
-
+    <div class="footer-info">© 2026 Lucky Pick. All rights reserved.</div>
+    <div class="footer-info">문의 : <a href="mailto:luckypick.help@gmail.com">luckypick.help@gmail.com</a></div>
     <div class="footer-info footer-desc">
       본 서비스는 AI 기반 번호 추천 서비스이며,<br>
       로또 당첨을 보장하지 않습니다.
@@ -291,50 +329,9 @@ loadHistory();
   </div>
 </footer>
 
-<style>
-.footer {
-  margin-top: 48px;
-  padding: 28px 16px;
-  background: #f4f6f8;
-  border-top: 1px solid #e0e0e0;
-}
-
-.footer-inner {
-  max-width: 480px;
-  margin: 0 auto;
-  text-align: center;
-}
-
-.footer-title {
-  font-weight: bold;
-  font-size: 14px;
-  margin-bottom: 8px;
-}
-
-.footer-info {
-  font-size: 12px;
-  color: #777;
-  margin-bottom: 6px;
-}
-
-.footer-info a {
-  color: #4a90e2;
-  text-decoration: none;
-}
-
-.footer-info a:hover {
-  text-decoration: underline;
-}
-
-.footer-desc {
-  margin-top: 10px;
-  color: #999;
-  line-height: 1.4;
-}
-</style>
-
 </body>
 </html>
+
 
 
 
